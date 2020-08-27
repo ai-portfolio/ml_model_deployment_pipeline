@@ -1,0 +1,65 @@
+# create virtual environment in root directory of the project
+$ python -m venv env 
+
+# activate the virtual environment
+$ source env/bin/activate
+
+# install initial requirements.txt
+$ pip install -r requirements.txt
+
+# ensure PYTHONPATH is set correctly in ~/.bash_profile
+$ code ~/.bash_profile
+export PYTHONPATH="~/Documents/_projects/ml_model_deployment/packages/regression_model"
+echo $PYTHONPATH
+
+
+# run model tests
+$ pytest packages/regression_model/tests/ -W ignore::DeprecationWarning
+
+# install regression model requirements.txt
+$ pip install -r packages/regression_model/requirements.txt
+
+# build the package (source distribution and wheel distribution)
+$ python packages/regression_model/setup.py sdist bdist_wheel
+
+# install model locally
+$ pip install -e packages/regression_model
+
+# train model
+$ python packages/regression_model/regression_model/train_pipeline.py
+
+# Flask application
+$ pip install -r packages/ml_api/requirements.txt
+
+# run Flask app
+$ cd packages/ml_api
+$ set FLASK_APP=run.py
+$ python run.py
+
+# run configuration tests
+$ pytest packages/ml_api/tests/ -W ignore::DeprecationWarning
+
+# publish to Gemfury
+
+
+# Heroku
+# download the Heroku CLI from www.heroku.com
+
+$ heroku login
+$ heroku git:remote -a lasso-reg-model
+$ git push heroku master
+
+# curl command to test Heroku endpoint with one record
+# download curl from curl.haxx.se 
+curl --header "Content-Type: application/json" --request POST --data @input_test.json https://lasso-reg-model.herokuapp.com//v1/predict/regression
+
+# Docker
+# install Docker app locally first
+$ docker
+
+# build Docker container
+$ docker build --build-arg PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} -t ml_api:latest .
+
+# neural_network_model
+# install regression model requirements.txt
+$ pip install -r packages/neural_network_model/requirements.txt
